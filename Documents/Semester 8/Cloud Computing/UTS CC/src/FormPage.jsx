@@ -2,12 +2,17 @@ import React from 'react';
 import {
   Box, VStack, Input, FormControl, FormLabel, Button, Textarea, Heading
 } from '@chakra-ui/react';
+import { useNavigate } from 'react-router-dom';
 
 function FormPage() {
+  const navigate = useNavigate();
+
   const handleSubmitForm = (event) => {
     event.preventDefault();
-    // Process form submission here. You might want to update state or call a backend API.
-    alert('Form submitted!');
+    // Here, you would typically validate the form fields, 
+    // process form submission, maybe update state or call a backend API.
+    // After successful form submission or processing, navigate to the results page.
+    navigate('/result');
   };
 
   return (
@@ -28,6 +33,7 @@ function FormPage() {
           <FormLabel>About Your Skin Condition</FormLabel>
           <Textarea placeholder="Describe your skin condition" />
         </FormControl>
+        {/* Removed onClick from Button, as onSubmit in the form is sufficient */}
         <Button type="submit" colorScheme="blue">Submit Form</Button>
       </VStack>
     </Box>
