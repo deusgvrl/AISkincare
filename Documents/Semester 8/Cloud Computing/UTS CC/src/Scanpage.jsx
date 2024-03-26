@@ -5,20 +5,24 @@ import {
   Input, Heading, Spinner, Text, ButtonGroup
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
-
+import { getStorage, ref, uploadString } from 'firebase/storage'; // Import storage functions
+import app from './firebase'; // Import the Firebase app instance
 
 function ScanPage() {
   const [imageSrc, setImageSrc] = useState('');
-  const [isLoading, setIsLoading] = useState(false); // Loading state
+  const [isLoading, setIsLoading] = useState(false);
   const { isOpen: isOpenCamera, onOpen: onOpenCamera, onClose: onCloseCamera } = useDisclosure();
   const { isOpen: isOpenUpload, onOpen: onOpenUpload, onClose: onCloseUpload } = useDisclosure();
   const videoRef = useRef(null);
   const inputRef = useRef(null);
   const navigate = useNavigate();
+  const storage = getStorage(app); // Get storage reference
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (imageSrc) {
-      navigate('/form'); // Change '/form' to your form page's path
+      const storageRef = ref(storage, 'images/' + Date.now()); // Define storage reference
+      await uploadString(storageRef, imageSrc, 'data_url'); // Upload image
+      navigate('/form');
     } else {
       alert('Please upload a photo before submitting.');
     }

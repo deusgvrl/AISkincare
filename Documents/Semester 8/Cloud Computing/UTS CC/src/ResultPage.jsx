@@ -1,13 +1,45 @@
-import React from 'react';
-import { Box, Grid, GridItem, Heading, Image, VStack, Center } from '@chakra-ui/react';
+import React, { useEffect, useState } from 'react';
+import { Box, Grid, VStack, Image, Center, Heading } from '@chakra-ui/react';
+import { getStorage, ref, getDownloadURL } from 'firebase/storage';
+import app from './firebase';
 
 function ResultPage() {
-  // Placeholder image URLs
-  const cheek1Url = "https://via.placeholder.com/200";
-  const cheek2Url = "https://via.placeholder.com/200";
-  const chinUrl = "https://via.placeholder.com/200";
-  const foreheadUrl = "https://via.placeholder.com/200";
-  const fullFaceUrl = "https://via.placeholder.com/412";
+  const [cheek1Url, setCheek1Url] = useState('');
+  const [cheek2Url, setCheek2Url] = useState('');
+  const [chinUrl, setChinUrl] = useState('');
+  const [foreheadUrl, setForeheadUrl] = useState('');
+  const [fullFaceUrl, setFullFaceUrl] = useState('');
+  
+  useEffect(() => {
+    const storage = getStorage(app);
+
+    // Fetch and set the download URLs for the images
+    const fetchImages = async () => {
+      try {
+        const cheek1Ref = ref(storage, 'cheek1.jpg'); // Update with the path to the image in Firebase Storage
+        const cheek2Ref = ref(storage, 'cheek2.jpg');
+        const chinRef = ref(storage, 'chin.jpg');
+        const foreheadRef = ref(storage, 'forehead.jpg');
+        const fullFaceRef = ref(storage, 'fullFace.jpg');
+
+        const cheek1Url = await getDownloadURL(cheek1Ref);
+        const cheek2Url = await getDownloadURL(cheek2Ref);
+        const chinUrl = await getDownloadURL(chinRef);
+        const foreheadUrl = await getDownloadURL(foreheadRef);
+        const fullFaceUrl = await getDownloadURL(fullFaceRef);
+
+        setCheek1Url(cheek1Url);
+        setCheek2Url(cheek2Url);
+        setChinUrl(chinUrl);
+        setForeheadUrl(foreheadUrl);
+        setFullFaceUrl(fullFaceUrl);
+      } catch (error) {
+        console.error('Error fetching images:', error);
+      }
+    };
+
+    fetchImages();
+  }, []);
 
   return (
     <Box minHeight='100vh' bg='black' p='5'>

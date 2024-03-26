@@ -1,17 +1,20 @@
 import React from 'react';
-import {
-  Box, VStack, Input, FormControl, FormLabel, Button, Textarea, Heading
-} from '@chakra-ui/react';
+import { Box, VStack, Input, FormControl, FormLabel, Button, Textarea, Heading } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
+import { getStorage, ref, uploadString } from 'firebase/storage'; // Import storage functions
+import app from './firebase'; // Import the Firebase app instance
 
 function FormPage() {
   const navigate = useNavigate();
+  const storage = getStorage(app);
 
-  const handleSubmitForm = (event) => {
+  const handleSubmitForm = async (event) => {
     event.preventDefault();
-    // Here, you would typically validate the form fields, 
-    // process form submission, maybe update state or call a backend API.
-    // After successful form submission or processing, navigate to the results page.
+
+    const imageSrc = ''; // Replace with the URL of the image to upload
+    const storageRef = ref(storage, 'images/' + Date.now()); // Define storage reference
+    await uploadString(storageRef, imageSrc, 'data_url'); // Upload image
+
     navigate('/result');
   };
 
