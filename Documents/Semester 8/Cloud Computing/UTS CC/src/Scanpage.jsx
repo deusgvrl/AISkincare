@@ -7,6 +7,10 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { getStorage, ref, uploadString } from 'firebase/storage'; // Import storage functions
 import app from './firebase'; // Import the Firebase app instance
+import { motion } from 'framer-motion';
+
+const animationDuration = 1; 
+const delayIncrement = 0.2;
 
 function ScanPage() {
   const [imageSrc, setImageSrc] = useState('');
@@ -17,6 +21,16 @@ function ScanPage() {
   const inputRef = useRef(null);
   const navigate = useNavigate();
   const storage = getStorage(app); // Get storage reference
+
+  const motionProps = {
+    initial: { opacity: 0, y: -20 },
+    animate: { opacity: 1, y: 0 },
+    transition: { duration: animationDuration },
+  };
+
+  const headingDelay = delayIncrement;
+  const textDelay = headingDelay + delayIncrement;
+  const buttonDelay = textDelay + delayIncrement * 2;
 
   const handleSubmit = async () => {
     if (imageSrc) {
@@ -68,83 +82,99 @@ function ScanPage() {
   };
 
   return (
-    <Box display='flex' py='2' bg='black' minHeight='100vh' justifyContent='center' alignContent='center'>
-      <VStack spacing={4}>
-        <Heading size='3xl' color='white' paddingTop={2} paddingBottom={2}>
-          Upload your Photo!
-        </Heading>
-        <Text fontSize='2xl' color='whiteAlpha.600' py='1'>
-          Please select the options below.
-        </Text>
-        <Box display='grid' gridTemplateRows='repeat(2, 1fr)' gap={3}>
-          <ButtonGroup  variant="outline" spacing={2}>
-            <Button
-              borderColor="yellow.200"
-              textColor="white"
-              _hover={{
-                background: "transparent",
-                borderColor: "white",
-                textDecoration: "underline",
-              }}
-              onClick={onOpenUpload}
-            >
-              Upload Photo
-            </Button>
-            <Button
-              borderColor="yellow.200"
-              textColor="white"
-              _hover={{
-                background: "transparent",
-                borderColor: "white",
-                textDecoration: "underline",
-              }}
-              onClick={handleCameraClick}
-            >
-              Use Webcam
-            </Button>
-          </ButtonGroup>
-        </Box>
-        {isLoading ? (
-          <Spinner size="xl" />
-        ) : (
-          imageSrc && (
-            <>
-            <Box border="2px" borderColor="yellow.200" borderRadius="lg" overflow="hidden" maxW='sm'>
-              <Image 
-                src={imageSrc} 
-                alt="Uploaded or Captured" 
-                objectFit="contain" // This ensures the image is scaled correctly within its box
-                boxSize="100%" // This will make the image as large as its container
-              />
-            </Box>
-            <Button onClick={() => setImageSrc('')}>Retake/Re-upload</Button>
-            <Button onClick={handleSubmit}>Submit</Button>
-            </>
-          )
-        )}
-        <Modal isOpen={isOpenCamera} onClose={onCloseCamera}>
-          <ModalOverlay />
-          <ModalContent>
-            <ModalBody p={6}>
-              <video ref={videoRef} autoPlay playsInline style={{ width: '100%', marginTop: '10px' }}></video>
-            </ModalBody>
-            <ModalFooter>
-              <Button colorScheme="blue" mr={3} onClick={capturePhoto}>Capture</Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
+      <Box minHeight="100vh" bg="black" p="5" color="white">
+        <VStack spacing="4" textAlign="center">
+          <motion.div {...motionProps} transition={{ ...motionProps.transition, delay: headingDelay }}>
+            <Heading as="h1" fontSize="6xl">
+              Upload your Photo!
+            </Heading>
+          </motion.div>
+          <motion.div {...motionProps} transition={{ ...motionProps.transition, delay: textDelay }}>
+            <Text fontSize="xl" color="whiteAlpha.600" mb="1px">
+              Please select the options below.
+            </Text>
+          </motion.div>
+          <motion.div {...motionProps} transition={{ ...motionProps.transition, delay: textDelay }}>
+            <ButtonGroup  variant="outline" spacing={2}>
+              <Button
+                borderColor="yellow.200"
+                textColor="white"
+                _hover={{
+                  background: "transparent",
+                  borderColor: "white",
+                  textDecoration: "underline",
+                }}
+                onClick={onOpenUpload}
+              >
+                Upload Photo
+              </Button>
+              <Button
+                borderColor="yellow.200"
+                textColor="white"
+                _hover={{
+                  background: "transparent",
+                  borderColor: "white",
+                  textDecoration: "underline",
+                }}
+                onClick={handleCameraClick}
+              >
+                Use Webcam
+              </Button>
+            </ButtonGroup>
+          </motion.div>
+          {isLoading ? (
+            <Spinner size="xl" />
+          ) : (
+            imageSrc && (
+              <>
+                <motion.div {...motionProps} transition={{ ...motionProps.transition, delay: buttonDelay }}>
+                  <Box border="2px" borderColor="yellow.200" borderRadius="lg" overflow="hidden" maxW='sm'>
+                    <Image 
+                      src={imageSrc} 
+                      alt="Uploaded or Captured" 
+                      objectFit="contain" // This ensures the image is scaled correctly within its box
+                      boxSize="100%" // This will make the image as large as its container
+                    />
+                  </Box>
+                </motion.div>
+                <motion.div {...motionProps} transition={{ ...motionProps.transition, delay: buttonDelay }}>
+                  <Button onClick={() => setImageSrc('')}>Retake/Re-upload</Button>
+                </motion.div>
+                <motion.div {...motionProps} transition={{ ...motionProps.transition, delay: buttonDelay }}>
+                  <Button onClick={handleSubmit}>Submit</Button>
+                </motion.div>
+              </>
+            )
+          )}
+          <Modal isOpen={isOpenCamera} onClose={onCloseCamera}>
+            <ModalOverlay />
+            <ModalContent>
+              <ModalBody p={6}>
+                <video ref={videoRef} autoPlay playsInline style={{ width: '100%', marginTop: '10px' }}></video>
+              </ModalBody>
+              <ModalFooter>
+                <Button colorScheme="blue" mr={3} onClick={capturePhoto}>Capture</Button>
+              </ModalFooter>
+            </ModalContent>
+          </Modal>
 
-        {/* Upload Modal */}
-        <Modal isOpen={isOpenUpload} onClose={onCloseUpload}>
-          <ModalOverlay />
-          <ModalContent>
-            <ModalBody p={6}>
-              <Input ref={inputRef} type="file" accept="image/*" onChange={handleFileChange} />
-            </ModalBody>
-          </ModalContent>
-        </Modal>
-      </VStack>
-    </Box>
+          {/* Upload Modal */}
+          <Modal isOpen={isOpenUpload} onClose={onCloseUpload}>
+            <ModalOverlay />
+            <ModalContent>
+              <ModalBody p={6}>
+                <Input ref={inputRef} type="file" accept="image/*" onChange={handleFileChange} />
+              </ModalBody>
+            </ModalContent>
+          </Modal>
+        </VStack>
+      </Box>
+    </motion.div>
   );
 }
 
