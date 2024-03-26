@@ -11,7 +11,7 @@ const PageAnimations = () => {
   const location = useLocation();
 
   return (
-    <AnimatePresence mode='wait'>
+    <AnimatePresence mode='wait' onExitComplete={() => console.log('Exit animations completed')}>
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={
           <motion.div exit={{ opacity: 0, y: 20 }}>
