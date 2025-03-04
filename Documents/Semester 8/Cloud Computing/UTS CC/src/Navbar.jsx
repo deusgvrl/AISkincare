@@ -6,12 +6,9 @@ function Navbar() {
   return (
       <Box bg="black" py="3" borderBottom="1px" px={6}>
         <Flex justify="space-between" align="center">
-          <Center paddingRight='450px'>
-
           <RouterLink to="/">
             <Image marginLeft={450} src="/face-recognition.svg" boxSize="40px" alt="Logo" />
           </RouterLink>
-          </Center>
 
           <Center>
           <HStack justify="center" position="absolute" left="0" right="0" spacing={6} >
